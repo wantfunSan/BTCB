@@ -67,6 +67,11 @@ async def help(ctx):
 
 @bot.command()
 async def create(ctx, botName: str = None, *, token: str = None):
+
+	if botName is None or token is None:
+		raise commands.errors.CommandInvokeError
+		return
+
 	if botName == None:
 		await ctx.reply(f'Введите имя бота')
 		return
@@ -119,6 +124,11 @@ async def on_ready():
 	await sentMsg.edit(content=f'Успешно!')
 @bot.command()
 async def hello(ctx, roleToAdd: discord.Role = None, channelToSend:discord.channel.TextChannel = None, *, helloMsg = None):
+
+	if roleToAdd is None or channelToSend is None or helloMsg is None:
+		raise commands.errors.CommandInvokeError
+		return
+
 	progress_bar = tqdm(total=5)
 	sentMsg = await ctx.send(f'Прогресс: {progress_bar}')
 	
@@ -164,6 +174,11 @@ async def on_member_join(member):
 
 @bot.command()
 async def goodbye(ctx, channelToSend:discord.channel.TextChannel = None, *, goodbyeMsg = None):
+
+	if channelToSend is None or goodbyeMsg is None:
+		raise commands.errors.CommandInvokeError
+		return
+
 	progress_bar = tqdm(total=5)
 	sentMsg = await ctx.send(f'Прогресс: {progress_bar}')
 	
@@ -393,6 +408,11 @@ async def kick(ctx, member: discord.Member = None, reason=None):
 
 @bot.command()
 async def voice_to_create(ctx, vcId: int = None):
+
+	if vcId is None:
+		raise commands.errors.CommandInvokeError
+		return
+
 	progress_bar = tqdm(total=3)
 	sentMsg = await ctx.send(f'Прогресс: {progress_bar}')
 	
@@ -449,6 +469,10 @@ async def on_command_error(ctx, error):
 		return
 	if isinstance(error, commands.CommandNotFound):
 		em = discord.Embed(title=f"Подожди!Ты допустил ошибку в команде!", description=f"Ты допустил ошибку в команде либо такой команды попросту не существует!", color=discord.Color.red())
+		await ctx.send(embed=em)
+		return
+	if isinstance(error, commands.errors.CommandInvokeError):
+		em = discord.Embed(title=f"Подожди!Ты допустил ошибку в команде!", description=f"Ты не ввёл какие-то важные аргументы команды!", color=discord.Color.red())
 		await ctx.send(embed=em)
 		return
 
