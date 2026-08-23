@@ -467,10 +467,10 @@ async def on_command_error(ctx, error):
 		em = discord.Embed(title=f"Подожди!Ты допустил ошибку в команде!", description=f"Ты не ввёл название канала либо такого канала попросту не существует!", color=discord.Color.red())
 		await ctx.send(embed=em)
 		return
-	if isinstance(error, commands.CommandNotFound):
+	'''if isinstance(error, commands.CommandNotFound):
 		em = discord.Embed(title=f"Подожди!Ты допустил ошибку в команде!", description=f"Ты допустил ошибку в команде либо такой команды попросту не существует!", color=discord.Color.red())
 		await ctx.send(embed=em)
-		return
+		return'''
 	if isinstance(error, commands.errors.CommandInvokeError):
 		em = discord.Embed(title=f"Подожди!Ты допустил ошибку в команде!", description=f"Ты не ввёл какие-то важные аргументы команды!", color=discord.Color.red())
 		await ctx.send(embed=em)
