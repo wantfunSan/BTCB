@@ -29,13 +29,12 @@ c = conn.cursor()
 #Создание таблицы для хранения данных пользователей
 c.execute('''CREATE TABLE IF NOT EXISTS bots (
 				member_name TEXT PRIMARY KEY,
-                bot_name TEXT
-            )''')
+				bot_name TEXT
+			)''')
 
 config = {
-	'token': 'bot_token',
 	'bot': 'BTCB',
-	'id': 'bot_id'
+	'id': '3457'
 }
 
 bot = commands.Bot(command_prefix = '-', intents=discord.Intents.all())
@@ -60,7 +59,7 @@ async def help(ctx):
 	embed.add_field(name = '**Оставить на сервере**', value = '``to_server`` (данная команда не является бесплатной, стоимость: 50руб, все подробности при вызове команды)')
 	embed.add_field(name = '**Окончание создания бота**', value = '``finish`` (это бесплатная функция, все подробности также, при вызове команды)')
 	embed.add_field(name = '**Больше информации**', value = "http://vlahouse.ru/documentation/btcb")
-	embed.add_field(name = '**Ошибки**', value = "При наличии ошибок, например, BTCB не отвечает на запросы, созданный бот некоректно работает, то вы можете отписать мне в личные сообщения. Мой телеграмм: @w4n7fun, Discord: ggvp3869, почта: sasha.petelinos.live@gmail.com")
+	embed.add_field(name = '**Ошибки**', value = "При наличии ошибок, например, BTCB не отвечает на запросы, созданный бот некоректно работает, то вы можете создать топик на сервере поддержки: https://discord.gg/rwjr5WnNW7")
 	embed.add_field(name = '**Рабочие дни**', value = 'Время, в которое создатель может ответить: любое время')
 	embed.set_footer(text='''Created by wantfun. Support author you can at https://www.donationalerts.com/r/petelinka''')
 	await ctx.reply(embed = embed)
@@ -78,8 +77,6 @@ async def create(ctx, botName: str = None, *, token: str = None):
 	if token == None:
 		await ctx.reply('Вы не указали токен! Вы можете посмотреть http://www.youtube.com/watch?v=VMV0176VbzM , чтобы узнать, как его получить. Не бойся, моему создателю твой токен ни к чему!')
 		return
-
-	await ctx.message.delete()
 	
 	progress_bar = tqdm(total=4)
 	sentMsg = await ctx.send(f'Прогресс: {progress_bar}')
@@ -112,6 +109,7 @@ bot = commands.Bot(command_prefix = '!', intents=discord.Intents.all())
 @bot.event
 async def on_ready():
 	print('Спасибо, что воспользовались моим сервисом, если вам понравится, подайте автору на пропитание) https://www.donationalerts.com/r/petelinka')
+	print('А также присоединяйся к нашему сообществу https://discord.gg/5PzDUgV8sm')
 	await bot.change_presence(status=discord.Status.idle, activity=discord.Game(name = "Bot created by BTCB"))
 ''' % (token, botName)) #строки первой необходимости
 	
@@ -121,7 +119,7 @@ async def on_ready():
 	botFile.close()
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	await sentMsg.edit(content=f'Успешно!')
+	await sentMsg.edit(content=f'Успешно! Обязательно удали свое сообщение с токеном!')
 @bot.command()
 async def hello(ctx, roleToAdd: discord.Role = None, channelToSend:discord.channel.TextChannel = None, *, helloMsg = None):
 
@@ -137,7 +135,7 @@ async def hello(ctx, roleToAdd: discord.Role = None, channelToSend:discord.chann
 	if bot_name  is None:
 		sentMsg = await ctx.send(content=f'Ошибка!')
 		await ctx.reply(f'Вы еще не создали своего бота! Используйте команду create !')
-		return                                                      
+		return													  
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 	
@@ -187,7 +185,7 @@ async def goodbye(ctx, channelToSend:discord.channel.TextChannel = None, *, good
 	if bot_name is None:
 		sentMsg = await ctx.send(content=f'Ошибка!')
 		await ctx.reply(f'Вы еще не создали своего бота! Используйте команду ``create`` !')
-		return                                                      
+		return													  
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 	
@@ -229,7 +227,7 @@ async def clear(ctx):
 	if bot_name is None:
 		sentMsg = await ctx.send(content=f'Ошибка!')
 		await ctx.reply(f'Вы еще не создали своего бота! Используйте команду create !')
-		return                                                      
+		return													  
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 
@@ -242,12 +240,12 @@ async def clear(ctx):
 @bot.command
 async def clear(ctx, count):
 	if count == None:
-        await ctx.reply(f'Пожалуйста, укажите число')
-        await ctx.message.add_reaction('❌')
-        return
-    await ctx.message.add_reaction('✅')
-    await ctx.channel.purge(limit=count+1)
-    await ctx.send(f"Удалено **{count}** сообщений")''')
+		await ctx.reply(f'Пожалуйста, укажите число')
+		await ctx.message.add_reaction('❌')
+		return
+	await ctx.message.add_reaction('✅')
+	await ctx.channel.purge(limit=count+1)
+	await ctx.send(f"Удалено **{count}** сообщений")''')
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 
@@ -266,7 +264,7 @@ async def mute(ctx):
 	if bot_name is None:
 		sentMsg = await ctx.send(content=f'Ошибка!')
 		await ctx.reply(f'Вы еще не создали своего бота! Используйте команду create !')
-		return                                                      
+		return													  
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 
@@ -368,7 +366,7 @@ async def kick(ctx):
 	if bot_name is None:
 		sentMsg = await ctx.send(content=f'Ошибка!')
 		await ctx.reply(f'Вы еще не создали своего бота! Используйте команду create !')
-		return                                                      
+		return													  
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 
@@ -421,7 +419,7 @@ async def voice_to_create(ctx, vcId: int = None):
 	if bot_name is None:
 		sentMsg = await ctx.send(content=f'Ошибка!')
 		await ctx.reply(f'Вы еще не создали своего бота! Используйте команду create !')
-		return                                                      
+		return													  
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 
@@ -467,10 +465,10 @@ async def on_command_error(ctx, error):
 		em = discord.Embed(title=f"Подожди!Ты допустил ошибку в команде!", description=f"Ты не ввёл название канала либо такого канала попросту не существует!", color=discord.Color.red())
 		await ctx.send(embed=em)
 		return
-	if isinstance(error, commands.CommandNotFound):
+	'''if isinstance(error, commands.CommandNotFound):
 		em = discord.Embed(title=f"Подожди!Ты допустил ошибку в команде!", description=f"Ты допустил ошибку в команде либо такой команды попросту не существует!", color=discord.Color.red())
 		await ctx.send(embed=em)
-		return
+		return'''
 	if isinstance(error, commands.errors.CommandInvokeError):
 		em = discord.Embed(title=f"Подожди!Ты допустил ошибку в команде!", description=f"Ты не ввёл какие-то важные аргументы команды!", color=discord.Color.red())
 		await ctx.send(embed=em)
@@ -495,7 +493,7 @@ async def finish(ctx):
 	if bot_name is None:
 		sentMsg = await ctx.send(content=f'Ошибка!')
 		await ctx.reply(f'Вы еще не создали своего бота! Используйте команду create !')
-		return                 
+		return				 
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 	
@@ -543,7 +541,7 @@ pause''' % (bot_name))
 	]
 
 	await ctx.send(f'Итак, чтобы запустить свего бота на Windows, ты должен: \n 1. Cкачать Python любой версии и установить его в такой путь: C:\Program Files\Python (в конце поставь свою версию без точек и другого, только цифры)\n2. Зайди в .bat файл который я тебе скинул и измени там где написано "тут-твоя-версия" на версию, которую ты указал в конце пункта 1\n 3. Нажми Win+R и напиши в открывшеемся окошке "cmd"4. Далее у тебя откроется командная строка, в которую ты должен вбить "pip install discord.py"\n5. Если у тебе напишет что-то вроде ""pip" команда не найдена", то вбей в поисковик "активация pip в переменных средах"', files = files)
-	await ctx.send(f'Если же у тебя Linux, то скачай Python любой версии через терминал "sudo apt install python3"\n2. Далее скачай .py файл, который я скинул в предыдущем сообщении\n3. Далее перейди в терминале в ту папку, где у тебя скрипт (это можно сделать через "cd /путь-к-папке")\n4. Далее напиши "python3 название-твоего-бота.py"')
+	await ctx.send(f'Если же у тебя Linux, то скачай Python любой версии через терминал "sudo apt install python3"\n2. Не выходя из терминала напиши команду "pip3 install discord.py"\n3. Далее скачай .py файл, который я скинул в предыдущем сообщении\n4. Далее перейди в терминале в ту папку, где у тебя скрипт (это можно сделать через "cd /путь-к-папке")\n4. Далее напиши "python3 название-твоего-бота.py"')
 	os.remove(bot_name[0]+'.py')
 	os.remove(bot_name[0]+'_start.bat')
 
