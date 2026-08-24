@@ -33,6 +33,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS bots (
 			)''')
 
 config = {
+	'token': 'token',
 	'bot': 'BTCB',
 	'id': '3457'
 }
