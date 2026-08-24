@@ -546,9 +546,4 @@ pause''' % (bot_name))
 	os.remove(bot_name[0]+'.py')
 	os.remove(bot_name[0]+'_start.bat')
 
-@bot.command()
-async def servers(ctx):
-	servers = list(bot.guilds)
-	await ctx.send(', '.join([guild.name for guild in servers]))
-
 bot.run(config['token'])
