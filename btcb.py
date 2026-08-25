@@ -53,8 +53,8 @@ async def on_ready():
 # -------------------- СЛЭШ-КОМАНДЫ (все с ephemeral=True) --------------------
 
 @bot.tree.command(name="help", description="Показать справку по боту")
-async def slash_help(interaction: discord.Interaction):
-	await interaction.response.defer(ephemeral=True)
+async def help(interaction: discord.Interaction):
+	await interaction.response.defer()
 	embed = discord.Embed(color=discord.Color.blurple())
 	embed.add_field(name='**Создание бота**', value='``create [имя-вашего-бота] [токен-бота]``')
 	embed.add_field(name='**Отправка сообщения при заходе нового участника**', value='``hello [упоминание-роли-которую-будут-выдавать] [упоминание-канала-для-сообщений]  [текст-сообщения]`` (для упоминания человека, просто напишите в нужном месте "@m")')
@@ -73,7 +73,7 @@ async def slash_help(interaction: discord.Interaction):
 
 @bot.tree.command(name="create", description="Создать нового бота")
 @app_commands.describe(bot_name="Имя вашего бота", token="Токен вашего бота")
-async def slash_create(interaction: discord.Interaction, bot_name: str, token: str):
+async def create(interaction: discord.Interaction, bot_name: str, token: str):
 	await interaction.response.defer(ephemeral=True)
 	progress_bar = tqdm(total=4)
 	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}', ephemeral=True)
@@ -117,20 +117,20 @@ async def on_ready():
 	botFile.close()
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	await sentMsg.edit(content=f'Успешно! Обязательно удали свое сообщение с токеном!')
+	await sentMsg.edit(content=f'Успешно!')
 
 @bot.tree.command(name="hello", description="Настроить приветствие новых участников")
 @app_commands.describe(role="Роль, которая будет выдаваться", channel="Канал для отправки приветствия", message="Текст приветствия (используйте @m для упоминания участника)")
-async def slash_hello(interaction: discord.Interaction, role: discord.Role, channel: discord.TextChannel, message: str):
-	await interaction.response.defer(ephemeral=True)
+async def hello(interaction: discord.Interaction, role: discord.Role, channel: discord.TextChannel, message: str):
+	await interaction.response.defer()
 	progress_bar = tqdm(total=5)
-	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}', ephemeral=True)
+	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}')
 
 	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (interaction.user.display_name,))
 	bot_name = c.fetchone()
 	if bot_name is None:
 		await sentMsg.edit(content=f'Ошибка!')
-		await interaction.followup.send(f'Вы еще не создали своего бота! Используйте команду create !', ephemeral=True)
+		await interaction.followup.send(f'Вы еще не создали своего бота! Используйте команду /create !', ephemeral=True)
 		return
 
 	progress_bar.update(1)
@@ -169,10 +169,10 @@ async def on_member_join(member):
 
 @bot.tree.command(name="goodbye", description="Настроить прощание при выходе участника")
 @app_commands.describe(channel="Канал для отправки сообщения", message="Текст прощания (используйте @m для упоминания участника)")
-async def slash_goodbye(interaction: discord.Interaction, channel: discord.TextChannel, message: str):
-	await interaction.response.defer(ephemeral=True)
+async def goodbye(interaction: discord.Interaction, channel: discord.TextChannel, message: str):
+	await interaction.response.defer()
 	progress_bar = tqdm(total=5)
-	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}', ephemeral=True)
+	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}')
 
 	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (interaction.user.display_name,))
 	bot_name = c.fetchone()
@@ -213,10 +213,10 @@ async def on_member_remove(member):
 	await sentMsg.edit(content=f'Успешно!')
 
 @bot.tree.command(name="clear", description="Добавить команду очистки чата в вашего бота")
-async def slash_clear(interaction: discord.Interaction):
-	await interaction.response.defer(ephemeral=True)
+async def clear(interaction: discord.Interaction):
+	await interaction.response.defer()
 	progress_bar = tqdm(total=4)
-	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}', ephemeral=True)
+	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}')
 
 	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (interaction.user.display_name,))
 	bot_name = c.fetchone()
@@ -253,10 +253,10 @@ async def clear(ctx, count):
 	await sentMsg.edit(content=f'Успешно!')
 
 @bot.tree.command(name="mute", description="Добавить систему мьюта в вашего бота")
-async def slash_mute(interaction: discord.Interaction):
-	await interaction.response.defer(ephemeral=True)
+async def mute(interaction: discord.Interaction):
+	await interaction.response.defer()
 	progress_bar = tqdm(total=4)
-	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}', ephemeral=True)
+	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}')
 
 	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (interaction.user.display_name,))
 	bot_name = c.fetchone()
@@ -358,10 +358,10 @@ async def unmute(ctx, member: discord.Member = None):
 	await sentMsg.edit(content=f'Успешно!')
 
 @bot.tree.command(name="kick", description="Добавить команду кика в вашего бота")
-async def slash_kick(interaction: discord.Interaction):
-	await interaction.response.defer(ephemeral=True)
+async def kick(interaction: discord.Interaction):
+	await interaction.response.defer()
 	progress_bar = tqdm(total=4)
-	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}', ephemeral=True)
+	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}')
 
 	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (interaction.user.display_name,))
 	bot_name = c.fetchone()
@@ -408,8 +408,8 @@ async def kick(ctx, member: discord.Member = None, reason=None):
 
 @bot.tree.command(name="voice_to_create", description="Настроить создание приватных войс-комнат")
 @app_commands.describe(voice_channel_id="ID голосового канала, при входе в который будет создаваться приватная комната")
-async def slash_voice_to_create(interaction: discord.Interaction, voice_channel_id: str):
-	await interaction.response.defer(ephemeral=True)
+async def voice_to_create(interaction: discord.Interaction, voice_channel_id: str):
+	await interaction.response.defer()
 	try:
 		vcId = int(voice_channel_id)
 	except ValueError:
@@ -417,7 +417,7 @@ async def slash_voice_to_create(interaction: discord.Interaction, voice_channel_
 		return
 
 	progress_bar = tqdm(total=3)
-	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}', ephemeral=True)
+	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}')
 
 	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (interaction.user.display_name,))
 	bot_name = c.fetchone()
@@ -461,8 +461,8 @@ async def on_voice_state_update(member,before,after): #Создание войс
 	await sentMsg.edit(content=f'Успешно!')
 
 @bot.tree.command(name="to_server", description="Информация о платной функции оставления бота на сервере")
-async def slash_to_server(interaction: discord.Interaction):
-	await interaction.response.defer(ephemeral=True)
+async def to_server(interaction: discord.Interaction):
+	await interaction.response.defer()
 	await interaction.followup.send(
 		"Прости, но это платная функция! Она стоит 50 рублей. Если ты уже переслал деньги, то ожидай пока мой создатель это увидит.\n"
 		"Форма сообщения: В форме сообщения Donation Alerts ты должен указать своё имя и на что ты скинул деньги. Далее пишешь в личку создателя ник, указанный в донате Donation Alerts и ожидаешь ответа.\n"
@@ -474,10 +474,10 @@ async def slash_to_server(interaction: discord.Interaction):
 	)
 
 @bot.tree.command(name="finish", description="Завершить создание бота и получить файлы для запуска")
-async def slash_finish(interaction: discord.Interaction):
-	await interaction.response.defer(ephemeral=True)
+async def finish(interaction: discord.Interaction):
+	await interaction.response.defer()
 	progress_bar = tqdm(total=9)
-	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}', ephemeral=True)
+	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}')
 
 	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (interaction.user.display_name,))
 	bot_name = c.fetchone()
