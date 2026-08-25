@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import discord
+from discord import app_commands
 import requests
 import time
 import json
@@ -33,7 +34,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS bots (
 			)''')
 
 config = {
-	'token': 'token',
+	'token': 'test',
 	'bot': 'BTCB',
 	'id': '3457'
 }
@@ -45,51 +46,47 @@ bot.remove_command('help')
 async def on_ready():
 	
 	print('ERRORS ARE SUCK!(maybe) )')
-	await bot.change_presence(status=discord.Status.idle, activity=discord.Game(name = '''Bot created by wF#2016'''))
+	await bot.change_presence(status=discord.Status.idle, activity=discord.Game(name = '''/help \nBot created by wF#2016'''))
+	await bot.tree.sync()
+	print("Слэш-команды синхронизированы!")
 
-@bot.command()
-async def help(ctx):
-	embed = discord.Embed(color = discord.Color.blurple())
-	embed.add_field(name = '**Создание бота**', value = '``create [имя-вашего-бота] [токен-бота]``')
-	embed.add_field(name = '**Отправка сообщения при заходе нового участника**', value = '``hello [упоминание-роли-которую-будут-выдавать] [упоминание-канала-для-сообщений]  [текст-сообщения]`` (для упоминания человека, просто напишите в нужном месте "@m")')
-	embed.add_field(name = '**Отправка сообщения при выходе участника**', value = '``goodbye [упоминание-канала-для-отправки] [текст-сообщения]`` (для упоминания человека, просто напишите в нужном месте @m)')
-	embed.add_field(name = '**Команда очистки чата**', value = '``clear``')
-	embed.add_field(name = '**Система мьюта**', value = '``mute`` - отправит участника в таймаут (у людей, которые будут использовать эту команду, должно быть право таймаутировать участников)')
-	embed.add_field(name = '**Команда "кик"**', value = '``kick`` у людей, которые будут использовать эту команду, должно быть право кикать участников)')
-	embed.add_field(name = '**Приватные войсы**', value = '``voice_to_create [айди-войс-чата]``')
-	embed.add_field(name = '**Оставить на сервере**', value = '``to_server`` (данная команда не является бесплатной, стоимость: 50руб, все подробности при вызове команды)')
-	embed.add_field(name = '**Окончание создания бота**', value = '``finish`` (это бесплатная функция, все подробности также, при вызове команды)')
-	embed.add_field(name = '**Больше информации**', value = "http://vlahouse.ru/documentation/btcb")
-	embed.add_field(name = '**Ошибки**', value = "При наличии ошибок, например, BTCB не отвечает на запросы, созданный бот некоректно работает, то вы можете создать топик на сервере поддержки: https://discord.gg/rwjr5WnNW7")
-	embed.add_field(name = '**Рабочие дни**', value = 'Время, в которое создатель может ответить: любое время')
+# -------------------- СЛЭШ-КОМАНДЫ (все с ephemeral=True) --------------------
+
+@bot.tree.command(name="help", description="Показать справку по боту")
+async def slash_help(interaction: discord.Interaction):
+	await interaction.response.defer(ephemeral=True)
+	embed = discord.Embed(color=discord.Color.blurple())
+	embed.add_field(name='**Создание бота**', value='``create [имя-вашего-бота] [токен-бота]``')
+	embed.add_field(name='**Отправка сообщения при заходе нового участника**', value='``hello [упоминание-роли-которую-будут-выдавать] [упоминание-канала-для-сообщений]  [текст-сообщения]`` (для упоминания человека, просто напишите в нужном месте "@m")')
+	embed.add_field(name='**Отправка сообщения при выходе участника**', value='``goodbye [упоминание-канала-для-отправки] [текст-сообщения]`` (для упоминания человека, просто напишите в нужном месте @m)')
+	embed.add_field(name='**Команда очистки чата**', value='``clear``')
+	embed.add_field(name='**Система мьюта**', value='``mute`` - отправит участника в таймаут (у людей, которые будут использовать эту команду, должно быть право таймаутить участников)')
+	embed.add_field(name='**Команда "кик"**', value='``kick`` у людей, которые будут использовать эту команду, должно быть право кикать участников)')
+	embed.add_field(name='**Приватные войсы**', value='``voice_to_create [айди-войс-чата]``')
+	embed.add_field(name='**Оставить на сервере**', value='``to_server`` (данная команда не является бесплатной, стоимость: 50руб, все подробности при вызове команды)')
+	embed.add_field(name='**Окончание создания бота**', value='``finish`` (это бесплатная функция, все подробности также, при вызове команды)')
+	embed.add_field(name='**Больше информации**', value="http://vlahouse.ru/documentation/btcb")
+	embed.add_field(name='**Ошибки**', value="При наличии ошибок, например, BTCB не отвечает на запросы, созданный бот некоректно работает, то вы можете создать топик на сервере поддержки: https://discord.gg/rwjr5WnNW7")
+	embed.add_field(name='**Рабочие дни**', value='Время, в которое создатель может ответить: любое время')
 	embed.set_footer(text='''Created by wantfun. Support author you can at https://www.donationalerts.com/r/petelinka''')
-	await ctx.reply(embed = embed)
+	await interaction.followup.send(embed=embed, ephemeral=True)
 
-@bot.command()
-async def create(ctx, botName: str = None, *, token: str = None):
-
-	if botName is None or token is None:
-		raise commands.errors.CommandInvokeError
-		return
-
-	if botName == None:
-		await ctx.reply(f'Введите имя бота')
-		return
-	if token == None:
-		await ctx.reply('Вы не указали токен! Вы можете посмотреть http://www.youtube.com/watch?v=VMV0176VbzM , чтобы узнать, как его получить. Не бойся, моему создателю твой токен ни к чему!')
-		return
-	
+@bot.tree.command(name="create", description="Создать нового бота")
+@app_commands.describe(bot_name="Имя вашего бота", token="Токен вашего бота")
+async def slash_create(interaction: discord.Interaction, bot_name: str, token: str):
+	await interaction.response.defer(ephemeral=True)
 	progress_bar = tqdm(total=4)
-	sentMsg = await ctx.send(f'Прогресс: {progress_bar}')
-	c.execute('INSERT INTO bots VALUES (?,?)', (ctx.author.display_name, botName))
+	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}', ephemeral=True)
+
+	c.execute('INSERT INTO bots VALUES (?,?)', (interaction.user.display_name, bot_name))
 	conn.commit()
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	
-	botFile = codecs.open(botName+'.py', 'a', "utf-8")
+
+	botFile = codecs.open(bot_name + '.py', 'a', "utf-8")
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	
+
 	botFile.write(u'''import discord
 import requests
 import time
@@ -112,45 +109,43 @@ async def on_ready():
 	print('Спасибо, что воспользовались моим сервисом, если вам понравится, подайте автору на пропитание) https://www.donationalerts.com/r/petelinka')
 	print('А также присоединяйся к нашему сообществу https://discord.gg/5PzDUgV8sm')
 	await bot.change_presence(status=discord.Status.idle, activity=discord.Game(name = "Bot created by BTCB"))
-''' % (token, botName)) #строки первой необходимости
-	
+''' % (token, bot_name))
+
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	
+
 	botFile.close()
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 	await sentMsg.edit(content=f'Успешно! Обязательно удали свое сообщение с токеном!')
-@bot.command()
-async def hello(ctx, roleToAdd: discord.Role = None, channelToSend:discord.channel.TextChannel = None, *, helloMsg = None):
 
-	if roleToAdd is None or channelToSend is None or helloMsg is None:
-		raise commands.errors.CommandInvokeError
+@bot.tree.command(name="hello", description="Настроить приветствие новых участников")
+@app_commands.describe(role="Роль, которая будет выдаваться", channel="Канал для отправки приветствия", message="Текст приветствия (используйте @m для упоминания участника)")
+async def slash_hello(interaction: discord.Interaction, role: discord.Role, channel: discord.TextChannel, message: str):
+	await interaction.response.defer(ephemeral=True)
+	progress_bar = tqdm(total=5)
+	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}', ephemeral=True)
+
+	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (interaction.user.display_name,))
+	bot_name = c.fetchone()
+	if bot_name is None:
+		await sentMsg.edit(content=f'Ошибка!')
+		await interaction.followup.send(f'Вы еще не создали своего бота! Используйте команду create !', ephemeral=True)
 		return
 
-	progress_bar = tqdm(total=5)
-	sentMsg = await ctx.send(f'Прогресс: {progress_bar}')
-	
-	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (ctx.author.display_name, ))
-	bot_name = c.fetchone()
-	if bot_name  is None:
-		sentMsg = await ctx.send(content=f'Ошибка!')
-		await ctx.reply(f'Вы еще не создали своего бота! Используйте команду create !')
-		return													  
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	
-	if '@m' in helloMsg:
-		helloMsg = helloMsg.replace("@m", '{member.mention}')
-		print(helloMsg)
+
+	if '@m' in message:
+		message = message.replace("@m", '{member.mention}')
 
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	
+
 	botFile = codecs.open(bot_name[0] + '.py', 'a', "utf-8")
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	
+
 	botFile.write(u'''
 
 @bot.event
@@ -162,7 +157,8 @@ async def on_member_join(member):
 	await channel.send(embed=embed)
 
 	role = discord.utils.get(member.guild.roles, name = "%s")
-	await member.add_roles(role)''' % (channelToSend.id, helloMsg, roleToAdd))
+	await member.add_roles(role)''' % (channel.id, message, role.name))
+
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 
@@ -171,45 +167,43 @@ async def on_member_join(member):
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 	await sentMsg.edit(content=f'Успешно!')
 
-@bot.command()
-async def goodbye(ctx, channelToSend:discord.channel.TextChannel = None, *, goodbyeMsg = None):
-
-	if channelToSend is None or goodbyeMsg is None:
-		raise commands.errors.CommandInvokeError
-		return
-
+@bot.tree.command(name="goodbye", description="Настроить прощание при выходе участника")
+@app_commands.describe(channel="Канал для отправки сообщения", message="Текст прощания (используйте @m для упоминания участника)")
+async def slash_goodbye(interaction: discord.Interaction, channel: discord.TextChannel, message: str):
+	await interaction.response.defer(ephemeral=True)
 	progress_bar = tqdm(total=5)
-	sentMsg = await ctx.send(f'Прогресс: {progress_bar}')
-	
-	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (ctx.author.display_name, ))
+	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}', ephemeral=True)
+
+	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (interaction.user.display_name,))
 	bot_name = c.fetchone()
 	if bot_name is None:
-		sentMsg = await ctx.send(content=f'Ошибка!')
-		await ctx.reply(f'Вы еще не создали своего бота! Используйте команду ``create`` !')
-		return													  
-	progress_bar.update(1)
-	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	
-	if '@m' in goodbyeMsg:
-		goodbyeMsg = goodbyeMsg.replace("@m", '{member.mention}')
-		print(goodbyeMsg)
+		await sentMsg.edit(content=f'Ошибка!')
+		await interaction.followup.send(f'Вы еще не создали своего бота! Используйте команду create !', ephemeral=True)
+		return
 
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	
-	botFile = codecs.open(bot_name[0]+'.py', 'a', "utf-8")
+
+	if '@m' in message:
+		message = message.replace("@m", '{member.mention}')
+
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	
+
+	botFile = codecs.open(bot_name[0] + '.py', 'a', "utf-8")
+	progress_bar.update(1)
+	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
+
 	botFile.write(u'''
 
 @bot.event
 async def on_member_remove(member):
 	goodbye = %s
-	channel = bot.get_channel(hello)
+	channel = bot.get_channel(goodbye)
 	embed = discord.Embed(color = 0x00FF01)
 	embed.add_field(name = f'%s')
-	await channel.send(embed=embed)''' % (channelToSend.id, goodbyeMsg))
+	await channel.send(embed=embed)''' % (channel.id, message))
+
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 
@@ -218,27 +212,29 @@ async def on_member_remove(member):
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 	await sentMsg.edit(content=f'Успешно!')
 
-@bot.command()
-async def clear(ctx):
+@bot.tree.command(name="clear", description="Добавить команду очистки чата в вашего бота")
+async def slash_clear(interaction: discord.Interaction):
+	await interaction.response.defer(ephemeral=True)
 	progress_bar = tqdm(total=4)
-	sentMsg = await ctx.send(f'Прогресс: {progress_bar}')
-	
-	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (ctx.author.display_name, ))
+	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}', ephemeral=True)
+
+	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (interaction.user.display_name,))
 	bot_name = c.fetchone()
 	if bot_name is None:
-		sentMsg = await ctx.send(content=f'Ошибка!')
-		await ctx.reply(f'Вы еще не создали своего бота! Используйте команду create !')
-		return													  
+		await sentMsg.edit(content=f'Ошибка!')
+		await interaction.followup.send(f'Вы еще не создали своего бота! Используйте команду create !', ephemeral=True)
+		return
+
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 
-	botFile = codecs.open(bot_name[0]+'.py', 'a', "utf-8")
+	botFile = codecs.open(bot_name[0] + '.py', 'a', "utf-8")
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	
+
 	botFile.write(u'''
 
-@bot.command
+@bot.command()
 async def clear(ctx, count):
 	if count == None:
 		await ctx.reply(f'Пожалуйста, укажите число')
@@ -247,6 +243,7 @@ async def clear(ctx, count):
 	await ctx.message.add_reaction('✅')
 	await ctx.channel.purge(limit=count+1)
 	await ctx.send(f"Удалено **{count}** сообщений")''')
+
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 
@@ -255,24 +252,26 @@ async def clear(ctx, count):
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 	await sentMsg.edit(content=f'Успешно!')
 
-@bot.command()
-async def mute(ctx):
+@bot.tree.command(name="mute", description="Добавить систему мьюта в вашего бота")
+async def slash_mute(interaction: discord.Interaction):
+	await interaction.response.defer(ephemeral=True)
 	progress_bar = tqdm(total=4)
-	sentMsg = await ctx.send(f'Прогресс: {progress_bar}')
-	
-	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (ctx.author.display_name, ))
+	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}', ephemeral=True)
+
+	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (interaction.user.display_name,))
 	bot_name = c.fetchone()
 	if bot_name is None:
-		sentMsg = await ctx.send(content=f'Ошибка!')
-		await ctx.reply(f'Вы еще не создали своего бота! Используйте команду create !')
-		return													  
+		await sentMsg.edit(content=f'Ошибка!')
+		await interaction.followup.send(f'Вы еще не создали своего бота! Используйте команду create !', ephemeral=True)
+		return
+
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 
-	botFile = codecs.open(bot_name[0]+'.py', 'a', "utf-8")
+	botFile = codecs.open(bot_name[0] + '.py', 'a', "utf-8")
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	
+
 	botFile.write(u'''
 
 @bot.command()
@@ -349,32 +348,35 @@ async def unmute(ctx, member: discord.Member = None):
 			embed.add_field(name='Размьютил', value = member.mention)
 			await member.edit(timed_out_until = None)
 			await ctx.send(embed=embed)''')
+
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	
+
 	botFile.close()
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 	await sentMsg.edit(content=f'Успешно!')
-			
-@bot.command()
-async def kick(ctx):
+
+@bot.tree.command(name="kick", description="Добавить команду кика в вашего бота")
+async def slash_kick(interaction: discord.Interaction):
+	await interaction.response.defer(ephemeral=True)
 	progress_bar = tqdm(total=4)
-	sentMsg = await ctx.send(f'Прогресс: {progress_bar}')
-	
-	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (ctx.author.display_name, ))
+	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}', ephemeral=True)
+
+	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (interaction.user.display_name,))
 	bot_name = c.fetchone()
 	if bot_name is None:
-		sentMsg = await ctx.send(content=f'Ошибка!')
-		await ctx.reply(f'Вы еще не создали своего бота! Используйте команду create !')
-		return													  
+		await sentMsg.edit(content=f'Ошибка!')
+		await interaction.followup.send(f'Вы еще не создали своего бота! Используйте команду create !', ephemeral=True)
+		return
+
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 
-	botFile = codecs.open(bot_name[0]+'.py', 'a', "utf-8")
+	botFile = codecs.open(bot_name[0] + '.py', 'a', "utf-8")
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	
+
 	botFile.write(u'''
 
 @bot.command()
@@ -396,38 +398,41 @@ async def kick(ctx, member: discord.Member = None, reason=None):
 		embed.add_field(name="Причина", value=reason)
 	await ctx.reply(embed=embed)''')
 
-
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	
+
 	botFile.close()
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 	await sentMsg.edit(content=f'Успешно!')
 
-@bot.command()
-async def voice_to_create(ctx, vcId: int = None):
-
-	if vcId is None:
-		raise commands.errors.CommandInvokeError
+@bot.tree.command(name="voice_to_create", description="Настроить создание приватных войс-комнат")
+@app_commands.describe(voice_channel_id="ID голосового канала, при входе в который будет создаваться приватная комната")
+async def slash_voice_to_create(interaction: discord.Interaction, voice_channel_id: str):
+	await interaction.response.defer(ephemeral=True)
+	try:
+		vcId = int(voice_channel_id)
+	except ValueError:
+		await interaction.followup.send("❌ ID должен быть числом!", ephemeral=True)
 		return
 
 	progress_bar = tqdm(total=3)
-	sentMsg = await ctx.send(f'Прогресс: {progress_bar}')
-	
-	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (ctx.author.display_name, ))
+	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}', ephemeral=True)
+
+	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (interaction.user.display_name,))
 	bot_name = c.fetchone()
 	if bot_name is None:
-		sentMsg = await ctx.send(content=f'Ошибка!')
-		await ctx.reply(f'Вы еще не создали своего бота! Используйте команду create !')
-		return													  
+		await sentMsg.edit(content=f'Ошибка!')
+		await interaction.followup.send(f'Вы еще не создали своего бота! Используйте команду create !', ephemeral=True)
+		return
+
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 
-	botFile = codecs.open(bot_name[0]+'.py', 'a', "utf-8")
+	botFile = codecs.open(bot_name[0] + '.py', 'a', "utf-8")
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	
+
 	botFile.write(u'''
 
 @bot.event
@@ -447,69 +452,62 @@ async def on_voice_state_update(member,before,after): #Создание войс
 					await bot.wait_for('voice_state_update',check=check)
 					await channel2.delete()''' % (vcId))
 
-
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	
+
 	botFile.close()
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 	await sentMsg.edit(content=f'Успешно!')
 
-@bot.event
-async def on_command_error(ctx, error):
-	if isinstance(error, commands.RoleNotFound):
-		em = discord.Embed(title=f"Подожди!Ты допустил ошибку в команде!", description=f"Ты не ввёл название роли либо такой роли попросту не существует!", color=discord.Color.red())
-		await ctx.send(embed=em)
-		return
-	if isinstance(error, commands.ChannelNotFound):
-		em = discord.Embed(title=f"Подожди!Ты допустил ошибку в команде!", description=f"Ты не ввёл название канала либо такого канала попросту не существует!", color=discord.Color.red())
-		await ctx.send(embed=em)
-		return
-	'''if isinstance(error, commands.CommandNotFound):
-		em = discord.Embed(title=f"Подожди!Ты допустил ошибку в команде!", description=f"Ты допустил ошибку в команде либо такой команды попросту не существует!", color=discord.Color.red())
-		await ctx.send(embed=em)
-		return'''
-	if isinstance(error, commands.errors.CommandInvokeError):
-		em = discord.Embed(title=f"Подожди!Ты допустил ошибку в команде!", description=f"Ты не ввёл какие-то важные аргументы команды!", color=discord.Color.red())
-		await ctx.send(embed=em)
-		return
+@bot.tree.command(name="to_server", description="Информация о платной функции оставления бота на сервере")
+async def slash_to_server(interaction: discord.Interaction):
+	await interaction.response.defer(ephemeral=True)
+	await interaction.followup.send(
+		"Прости, но это платная функция! Она стоит 50 рублей. Если ты уже переслал деньги, то ожидай пока мой создатель это увидит.\n"
+		"Форма сообщения: В форме сообщения Donation Alerts ты должен указать своё имя и на что ты скинул деньги. Далее пишешь в личку создателя ник, указанный в донате Donation Alerts и ожидаешь ответа.\n"
+		"Личные сообщения создателя: ggvp3869(Discord) или @w4n7fun(Telegram)\n"
+		"Ссылка на донэйшн алёртс: https://www.donationalerts.com/r/petelinka\n"
+		"Все деньги пойдут на продвижение функционала бота, программистических способностей создателя, а также на покушац)\n"
+		"Рабочие дни: любой день",
+		ephemeral=True
+	)
 
-@bot.command()
-async def to_server(ctx):
-	await ctx.reply(f'Прости, но это платная функция! Она стоит 50 рублей. Если ты уже переслал деньги, то ожидай пока мой создатель это увидит.')
-	await ctx.send(f'Форма сообщения: В форме сообщения Donation Alerts ты должен указать своё имя и на что ты скинул деньги. Далее пишешь в личку создателя ник, указанный в донате Donation Alerts и ожидаешь ответа.')
-	await ctx.send(f'Личные сообщения создателя: ggvp3869(Discord) или @w4n7fun(Telegram)')
-	await ctx.send(f'Ссылка на донэйшн алёртс: https://www.donationalerts.com/r/petelinka')
-	await ctx.send(f'Все деньги пойдут на продвижение функционала бота, программистических способностей создателя, а также на покушац)')
-	await ctx.send(f'Рабочие дни: любой день')
-
-@bot.command()
-async def finish(ctx):
+@bot.tree.command(name="finish", description="Завершить создание бота и получить файлы для запуска")
+async def slash_finish(interaction: discord.Interaction):
+	await interaction.response.defer(ephemeral=True)
 	progress_bar = tqdm(total=9)
-	sentMsg = await ctx.send(f'Прогресс: {progress_bar}')
+	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}', ephemeral=True)
 
-	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (ctx.author.display_name, ))
+	c.execute('SELECT bot_name FROM bots WHERE member_name = ?', (interaction.user.display_name,))
 	bot_name = c.fetchone()
 	if bot_name is None:
-		sentMsg = await ctx.send(content=f'Ошибка!')
-		await ctx.reply(f'Вы еще не создали своего бота! Используйте команду create !')
-		return				 
+		await sentMsg.edit(content=f'Ошибка!')
+		await interaction.followup.send(f'Вы еще не создали своего бота! Используйте команду create !', ephemeral=True)
+		return
+
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	
-	await ctx.reply(f'Ты воспользовался бесплатной функцией! Примечание: \n1. С помощью этой функции ты сможешь запускать бота, и **он будет функционировать пока ты не выключишь компьютер**(!)\n2. Я напишу как использовать этого бота только на Windows и Linux, как её использовать на macOS ты сможешь увидеть в интернете!')
-	
+
+	await interaction.followup.send(
+		"Ты воспользовался бесплатной функцией! Примечание: \n"
+		"1. С помощью этой функции ты сможешь запускать бота, и **он будет функционировать пока ты не выключишь компьютер**(!)\n"
+		"2. Я напишу как использовать этого бота только на Windows и Linux, как её использовать на macOS ты сможешь увидеть в интернете!",
+		ephemeral=True
+	)
+
+	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	c.execute('DELETE FROM bots WHERE member_name = ?', (ctx.author.display_name, ))
+
+	c.execute('DELETE FROM bots WHERE member_name = ?', (interaction.user.display_name,))
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 
 	conn.commit()
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
-	
-	botFile = codecs.open(bot_name[0]+'.py', 'a', 'utf-8')
+
+	botFile = codecs.open(bot_name[0] + '.py', 'a', 'utf-8')
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 
@@ -521,13 +519,14 @@ async def finish(ctx):
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 
-	batFile = codecs.open(bot_name[0]+'_start.bat', 'a', 'utf-8')
+	batFile = codecs.open(bot_name[0] + '_start.bat', 'a', 'utf-8')
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 
 	batFile.write(u'''@echo off
 "C:\\Program Files\\Pythonтут-твоя-версия\\python.exe" "%s.py"
-pause''' % (bot_name))
+pause''' % (bot_name[0]))
+
 	progress_bar.update(1)
 	await sentMsg.edit(content=f'Прогресс: {progress_bar}')
 
@@ -537,13 +536,51 @@ pause''' % (bot_name))
 	await sentMsg.edit(content=f'Успешно!')
 
 	files = [
-	discord.File(bot_name[0]+'.py'),
-	discord.File(bot_name[0]+'_start.bat')
+		discord.File(bot_name[0] + '.py'),
+		discord.File(bot_name[0] + '_start.bat')
 	]
 
-	await ctx.send(f'Итак, чтобы запустить свего бота на Windows, ты должен: \n 1. Cкачать Python любой версии и установить его в такой путь: C:\Program Files\Python (в конце поставь свою версию без точек и другого, только цифры)\n2. Зайди в .bat файл который я тебе скинул и измени там где написано "тут-твоя-версия" на версию, которую ты указал в конце пункта 1\n 3. Нажми Win+R и напиши в открывшеемся окошке "cmd"4. Далее у тебя откроется командная строка, в которую ты должен вбить "pip install discord.py"\n5. Если у тебе напишет что-то вроде ""pip" команда не найдена", то вбей в поисковик "активация pip в переменных средах"', files = files)
-	await ctx.send(f'Если же у тебя Linux, то скачай Python любой версии через терминал "sudo apt install python3"\n2. Не выходя из терминала напиши команду "pip3 install discord.py"\n3. Далее скачай .py файл, который я скинул в предыдущем сообщении\n4. Далее перейди в терминале в ту папку, где у тебя скрипт (это можно сделать через "cd /путь-к-папке")\n4. Далее напиши "python3 название-твоего-бота.py"')
-	os.remove(bot_name[0]+'.py')
-	os.remove(bot_name[0]+'_start.bat')
+	await interaction.followup.send(
+		"Итак, чтобы запустить свего бота на Windows, ты должен: \n"
+		"1. Cкачать Python любой версии и установить его в такой путь: C:\Program Files\Python (в конце поставь свою версию без точек и другого, только цифры)\n"
+		"2. Зайди в .bat файл который я тебе скинул и измени там где написано 'тут-твоя-версия' на версию, которую ты указал в конце пункта 1\n"
+		"3. Нажми Win+R и напиши в открывшеемся окошке 'cmd'\n"
+		"4. Далее у тебя откроется командная строка, в которую ты должен вбить 'pip install discord.py'\n"
+		"5. Если у тебе напишет что-то вроде ''pip' команда не найдена', то вбей в поисковик 'активация pip в переменных средах'",
+		files=files,
+		ephemeral=True
+	)
+
+	await interaction.followup.send(
+		"Если же у тебя Linux, то скачай Python любой версии через терминал 'sudo apt install python3'\n"
+		"2. Не выходя из терминала напиши команду 'pip3 install discord.py'\n"
+		"3. Далее скачай .py файл, который я скинул в предыдущем сообщении\n"
+		"4. Далее перейди в терминале в ту папку, где у тебя скрипт (это можно сделать через 'cd /путь-к-папке')\n"
+		"5. Далее напиши 'python3 название-твоего-бота.py'",
+		ephemeral=True
+	)
+
+	os.remove(bot_name[0] + '.py')
+	os.remove(bot_name[0] + '_start.bat')
+
+@bot.tree.error
+async def on_command_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+	if isinstance(error, commands.RoleNotFound):
+		em = discord.Embed(title=f"Подожди! Ты допустил ошибку в команде!", description=f"Ты не ввёл название роли либо такой роли попросту не существует!", color=discord.Color.red())
+		await interaction.response.send_message(embed=em, ephemeral=True)
+		return
+	if isinstance(error, commands.ChannelNotFound):
+		em = discord.Embed(title=f"Подожди! Ты допустил ошибку в команде!", description=f"Ты не ввёл название канала либо такого канала попросту не существует!", color=discord.Color.red())
+		await interaction.response.send_message(embed=em, ephemeral=True)
+		return
+	if isinstance(error, commands.errors.CommandInvokeError):
+		em = discord.Embed(title=f"Подожди! Ты допустил ошибку в команде!", description=f"Ты не ввёл какие-то важные аргументы команды!", color=discord.Color.red())
+		await interaction.response.send_message(embed=em, ephemeral=True)
+		return
+
+@bot.command()
+async def servers(ctx):
+	servers = list(bot.guilds)
+	await ctx.send(', '.join([guild.name for guild in servers]))
 
 bot.run(config['token'])
