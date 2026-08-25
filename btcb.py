@@ -121,7 +121,7 @@ async def on_ready():
 
 @bot.tree.command(name="hello", description="Настроить приветствие новых участников")
 @app_commands.describe(role="Роль, которая будет выдаваться", channel="Канал для отправки приветствия", message="Текст приветствия (используйте @m для упоминания участника)")
-async def hello(interaction: discord.Interaction, role: discord.Role, channel: discord.TextChannel, message: str):
+async def hello(interaction: discord.Interaction, role: commands.Greedy[discord.Role] = None, channel: discord.TextChannel, message: str):
 	await interaction.response.defer()
 	progress_bar = tqdm(total=5)
 	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}')
