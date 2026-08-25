@@ -578,9 +578,4 @@ async def on_command_error(interaction: discord.Interaction, error: app_commands
 		await interaction.response.send_message(embed=em, ephemeral=True)
 		return
 
-@bot.command()
-async def servers(ctx):
-	servers = list(bot.guilds)
-	await ctx.send(', '.join([guild.name for guild in servers]))
-
 bot.run(config['token'])
