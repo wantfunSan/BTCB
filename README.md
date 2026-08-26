@@ -15,7 +15,7 @@ BTCB(Bot to Create Bot) - это конструктор ботов для тог
 ### Установка библиотек
 
 ```
-pip install discord.py tqdm
+pip install discord.py tqdm requests time
 ```
 
 #### Документация
