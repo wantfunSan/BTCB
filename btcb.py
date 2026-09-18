@@ -34,9 +34,9 @@ c.execute('''CREATE TABLE IF NOT EXISTS bots (
 			)''')
 
 config = {
-	'token': 'token',
-	'bot': 'BTCB',
-	'id': '3457'
+	'token': 'your-token',
+	'bot': 'name',
+	'id': 'botId'
 }
 
 bot = commands.Bot(command_prefix = '-', intents=discord.Intents.all())
@@ -76,8 +76,30 @@ async def help(interaction: discord.Interaction):
 @app_commands.describe(bot_name="Имя вашего бота", token="Токен вашего бота")
 async def create(interaction: discord.Interaction, bot_name: str, token: str):
 	await interaction.response.defer(ephemeral=True)
+
 	progress_bar = tqdm(total=4)
 	sentMsg = await interaction.followup.send(f'Прогресс: {progress_bar}', ephemeral=True)
+
+	c.execute('SELECT bot_name FROM bots WHERE member_name=?', (interaction.user.display_name, ))
+	check_bot = c.fetchone()
+	print(check_bot)
+	if check_bot is None:
+		pass
+	else:
+		await sentMsg.edit(content=f'Можно создавать только одного бота одновременно!')
+		return
+
+	request_url = 'https://discord.com/api/v10/users/@me'
+	headers = {
+		'Authorization': f'Bot {token}',
+		'Content-Type': 'application/json'
+	}
+	response = requests.get(url=request_url, headers=headers)
+	if response:
+		pass
+	else:
+		await sentMsg.edit(content=f'Бота с таким токеном не существует!')
+		return
 
 	c.execute('INSERT INTO bots VALUES (?,?)', (interaction.user.display_name, bot_name))
 	conn.commit()
@@ -788,10 +810,5 @@ async def on_command_error(interaction: discord.Interaction, error: app_commands
 		em = discord.Embed(title=f"Подожди! Ты допустил ошибку в команде!", description=f"Ты не ввёл какие-то важные аргументы команды!", color=discord.Color.red())
 		await interaction.response.send_message(embed=em, ephemeral=True)
 		return
-
-@bot.command()
-async def servers(ctx):
-	servers = list(bot.guilds)
-	await ctx.send(', '.join([guild.name for guild in servers]))
 
 bot.run(config['token'])
