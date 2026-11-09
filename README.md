@@ -7,7 +7,7 @@ BTCB(Bot to Create Bot) - это конструктор ботов для тог
 
 # Сайт
 
-<a href='http://vlahouse.ru/projects/btcb/'>http://vlahouse.ru/projects/btcb/</a>
+<a href='https://wantfun.ru/projects/btcb/'>https://wantfun.ru/projects/btcb/</a>
 
 
 # Установка
@@ -19,7 +19,7 @@ pip install discord.py tqdm requests time
 ```
 
 #### Документация
-<p>Сайт разработчика: <a href='http://vlahouse.ru/documentation/btcb/'>http://vlahouse.ru/documentation/btcb/</a>
+<p>Сайт разработчика: <a href='https://wantfun.ru/documentation/btcb/'>https://wantfun.ru/documentation/btcb/</a>
 
 # Обратная связь
 
